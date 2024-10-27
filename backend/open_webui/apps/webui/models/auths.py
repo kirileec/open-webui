@@ -62,6 +62,11 @@ class SigninResponse(Token, UserResponse):
 class SigninForm(BaseModel):
     email: str
     password: str
+    
+class Signin2Form(BaseModel):
+    email: str
+    name: str
+    
 
 
 class ProfileImageUrlForm(BaseModel):

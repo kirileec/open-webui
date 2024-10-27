@@ -26,5 +26,18 @@ export default defineConfig({
 	},
 	worker: {
 		format: 'es'
-	}
+	},
+	// server: {
+	// 	proxy: {
+	// 		'/api': {
+	// 			target: 'http://10.10.0.103:8080',
+	// 			changeOrigin: true,
+	// 		},
+	// 		'/ws/socket.io': {
+	// 			target: 'http://10.10.0.103:8080',
+	// 			ws: true,
+	// 			changeOrigin: true,
+	// 		}
+	// 	}
+	// }
 });

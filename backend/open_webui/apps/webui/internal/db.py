@@ -12,6 +12,8 @@ from open_webui.env import (
     DATABASE_POOL_RECYCLE,
     DATABASE_POOL_SIZE,
     DATABASE_POOL_TIMEOUT,
+    SSO_MODE,
+    SSO_DB_URL
 )
 from peewee_migrate import Router
 from sqlalchemy import Dialect, create_engine, types
@@ -102,6 +104,21 @@ SessionLocal = sessionmaker(
 Base = declarative_base()
 Session = scoped_session(SessionLocal)
 
+if SSO_MODE:
+    engine2 = create_engine(
+        SSO_DB_URL,pool_pre_ping=True, poolclass=NullPool
+    )
+    SessionLocal2 = sessionmaker(
+        autocommit=False, autoflush=False, bind=engine2, expire_on_commit=False
+    )
+    Session2 = scoped_session(SessionLocal2)
+
+def get_session2():
+    db2 = SessionLocal2()
+    try:
+        yield db2
+    finally:
+        db2.close()
 
 def get_session():
     db = SessionLocal()
@@ -112,3 +129,5 @@ def get_session():
 
 
 get_db = contextmanager(get_session)
+get_db2 = contextmanager(get_session2)
+
