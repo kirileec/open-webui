@@ -12,12 +12,15 @@ from open_webui.models.auths import (
     Token,
     LdapForm,
     SigninForm,
+    Signin2Form,
     SigninResponse,
     SignupForm,
     UpdatePasswordForm,
     UpdateProfileForm,
     UserResponse,
 )
+
+
 from open_webui.models.users import Users
 
 from open_webui.constants import ERROR_MESSAGES, WEBHOOK_MESSAGES
@@ -27,14 +30,21 @@ from open_webui.env import (
     WEBUI_AUTH_TRUSTED_NAME_HEADER,
     WEBUI_SESSION_COOKIE_SAME_SITE,
     WEBUI_SESSION_COOKIE_SECURE,
-    SRC_LOG_LEVELS,
+	SRC_LOG_LEVELS,
+    SSO_MODE,
+    SSO_DB_URL,
+    SSO_TABLE,
+    SSO_FIELD_NAME,
+    SSO_FIELD_EMAIL,
+    SSO_FIELD_NICKNAME,
+    SSO_FIELD_AVATAR,
+    SSO_FIELD_ID
 )
+if SSO_MODE:
+    from open_webui.apps.webui.internal.db import Session2
+    from sqlalchemy import text
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from fastapi.responses import RedirectResponse, Response
-from open_webui.config import (
-    OPENID_PROVIDER_URL,
-    ENABLE_OAUTH_SIGNUP,
-)
+from fastapi.responses import Response
 from pydantic import BaseModel
 from open_webui.utils.misc import parse_duration, validate_email_format
 from open_webui.utils.auth import (
@@ -299,6 +309,61 @@ async def ldap_auth(request: Request, response: Response, form_data: LdapForm):
             )
     except Exception as e:
         raise HTTPException(400, detail=str(e))
+
+
+############################
+# SignInWithEmail
+############################
+
+@router.post("/signin2",response_model=SessionUserResponse)
+async def signin2(request: Request, response: Response, form_data: Signin2Form):
+    print("signin2")
+    if SSO_MODE:
+        sql = f"SELECT {SSO_FIELD_ID},{SSO_FIELD_NAME},{SSO_FIELD_EMAIL},{SSO_FIELD_NICKNAME} FROM {SSO_TABLE} WHERE {SSO_FIELD_EMAIL}='{form_data.email}'"
+        result = Session2.execute(text(sql))
+        print(sql)
+        user = result.fetchone()
+        if user:
+            print(user)
+            # user = Auths.authenticate_user(admin_email.lower(), admin_password)
+            expires_delta = parse_duration(request.app.state.config.JWT_EXPIRES_IN)
+            expires_at = None
+            if expires_delta:
+                expires_at = int(time.time()) + int(expires_delta.total_seconds())
+
+            token = create_token(
+                data={"id": str(user[0])},
+                expires_delta=expires_delta,
+            )
+
+            datetime_expires_at = (
+                datetime.datetime.fromtimestamp(expires_at, datetime.timezone.utc)
+                if expires_at
+                else None
+            )
+
+            # Set the cookie token
+            response.set_cookie(
+                key="token",
+                value=token,
+                expires=datetime_expires_at,
+                httponly=True,  # Ensures the cookie is not accessible via JavaScript
+                samesite=WEBUI_SESSION_COOKIE_SAME_SITE,
+                secure=WEBUI_SESSION_COOKIE_SECURE,
+            )
+
+            return {
+                "token": token,
+                "token_type": "Bearer",
+                "expires_at": expires_at,
+                "id": str(user[0]),
+                "email": user[2],
+                "name": user[1],
+                "role": "user",
+                "profile_image_url": "",
+            }
+        else:
+            raise HTTPException(400, detail=f"user {form_data.name} not found")  
 
 
 ############################

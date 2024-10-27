@@ -396,6 +396,50 @@ else:
         )
     except Exception:
         AIOHTTP_CLIENT_TIMEOUT_OPENAI_MODEL_LIST = 5
+		
+export const userSignIn2 = async (email: string, name: string) => {
+	let error = null;
+
+	const res = await fetch(`${WEBUI_API_BASE_URL}/auths/signin2`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		credentials: 'include',
+		body: JSON.stringify({
+			email: email,
+			name: name
+		})
+	})
+		.then(async (res) => {
+			if (!res.ok) throw await res.json();
+			return res.json();
+		})
+		.catch((err) => {
+			console.log(err);
+
+			error = err.detail;
+			return null;
+		});
+
+	if (error) {
+		throw error;
+	}
+
+	return res;
+};
+
+####################################
+# SSO Mode
+####################################
+SSO_MODE = os.environ.get("SSO_MODE", "false").lower() == "true"
+SSO_DB_URL = os.environ.get("SSO_DB_URL","mysql+pymysql://root:123456@mysql:3306/cool")
+SSO_TABLE = os.environ.get("SSO_TABLE","chatgpt_client")
+SSO_FIELD_NAME = os.environ.get("SSO_FIELD_NAME","user_name")
+SSO_FIELD_EMAIL = os.environ.get("SSO_FIELD_EMAIL","email")
+SSO_FIELD_NICKNAME = os.environ.get("SSO_FIELD_NICKNAME","")
+SSO_FIELD_AVATAR = os.environ.get("SSO_FIELD_AVATAR","")
+SSO_FIELD_ID = os.environ.get("SSO_FIELD_ID","user_id")
 
 ####################################
 # OFFLINE_MODE
