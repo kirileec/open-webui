@@ -28,9 +28,6 @@
 	};
     // onMount 确保在组件挂载后获取 URL 的查询参数
     onMount(async () => {
-        if ($user !== undefined) {
-			await goto('/');
-		}
         const params = new URLSearchParams(window.location.search);
         email = params.get('email') || '';
         name = params.get('name') || '';

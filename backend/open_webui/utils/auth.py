@@ -125,43 +125,22 @@ def get_current_user(
 
     # auth by jwt token
     data = decode_token(token)
-    print("decode_token",token, data)
-    if SSO_MODE:
-        if data is not None and "id" in data:
-            sql = f"SELECT {SSO_FIELD_ID},{SSO_FIELD_NAME},{SSO_FIELD_EMAIL},{SSO_FIELD_NICKNAME} FROM {SSO_TABLE} WHERE {SSO_FIELD_ID}={data['id']}"
-            result = Session2.execute(text(sql))
-            uu = result.fetchone()
-            user = UserModel(
-                **{
-                    "id": data["id"],
-                    "name": uu[1],
-                    "email": uu[2],
-                    "role": "user",
-                    "profile_image_url": "",
-                    "last_active_at": int(time.time()),
-                    "created_at": int(time.time()),
-                    "updated_at": int(time.time()),
-           
-                }
-            )
-            return user
-            
-    else:
-        if data is not None and "id" in data:
-            user = Users.get_user_by_id(data["id"])
-            if user is None:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail=ERROR_MESSAGES.INVALID_TOKEN,
-                )
-            else:
-                Users.update_user_last_active_by_id(user.id)
-            return user
-        else:
+
+    if data is not None and "id" in data:
+        user = Users.get_user_by_id(data["id"])
+        if user is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=ERROR_MESSAGES.UNAUTHORIZED,
+                detail=ERROR_MESSAGES.INVALID_TOKEN,
             )
+        else:
+            Users.update_user_last_active_by_id(user.id)
+        return user
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=ERROR_MESSAGES.UNAUTHORIZED,
+        )
 
 
 def get_current_user_by_api_key(api_key: str):
