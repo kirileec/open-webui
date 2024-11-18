@@ -159,52 +159,72 @@ async def update_password(
 async def signin2(request: Request, response: Response, form_data: Signin2Form):
     print("signin2")
     if SSO_MODE:
-        sql = f"SELECT {SSO_FIELD_ID},{SSO_FIELD_NAME},{SSO_FIELD_EMAIL},{SSO_FIELD_NICKNAME} FROM {SSO_TABLE} WHERE {SSO_FIELD_EMAIL}='{form_data.email}'"
-        result = Session2.execute(text(sql))
-        print(sql)
-        user = result.fetchone()
-        if user:
-            print(user)
-            # user = Auths.authenticate_user(admin_email.lower(), admin_password)
-            expires_delta = parse_duration(request.app.state.config.JWT_EXPIRES_IN)
-            expires_at = None
-            if expires_delta:
-                expires_at = int(time.time()) + int(expires_delta.total_seconds())
+        sql = f"SELECT {SSO_FIELD_ID},{SSO_FIELD_NAME},{SSO_FIELD_EMAIL} FROM {SSO_TABLE} WHERE user_type=2 and `status`=1 and expire_time > NOW() and {SSO_FIELD_EMAIL}='{form_data.email}'"
+        try:
+            result = Session2.execute(text(sql))
+            userSrc = result.fetchone()
+        except Exception as e:
+            raise HTTPException(500, detail=ERROR_MESSAGES.DEFAULT(e))
+        # end try
+        
+        if userSrc:
+            # 用户存在, 表示验证通过, 此时将用户注册到系统中
+            if not Users.get_user_by_email(form_data.email.lower()):
+                await signup(
+                    request,
+                    response,
+                    SignupForm(
+                        email=form_data.email, password=str(uuid.uuid4()), name=form_data.name
+                    ),
+                )
+            user = Auths.authenticate_user_by_trusted_header(form_data.email)
+            
+            
+            if user:
 
-            token = create_token(
-                data={"id": str(user[0])},
-                expires_delta=expires_delta,
-            )
+                expires_delta = parse_duration(request.app.state.config.JWT_EXPIRES_IN)
+                expires_at = None
+                if expires_delta:
+                    expires_at = int(time.time()) + int(expires_delta.total_seconds())
 
-            datetime_expires_at = (
-                datetime.datetime.fromtimestamp(expires_at, datetime.timezone.utc)
-                if expires_at
-                else None
-            )
+                token = create_token(
+                    data={"id": user.id},
+                    expires_delta=expires_delta,
+                )
 
-            # Set the cookie token
-            response.set_cookie(
-                key="token",
-                value=token,
-                expires=datetime_expires_at,
-                httponly=True,  # Ensures the cookie is not accessible via JavaScript
-                samesite=WEBUI_SESSION_COOKIE_SAME_SITE,
-                secure=WEBUI_SESSION_COOKIE_SECURE,
-            )
+                datetime_expires_at = (
+                    datetime.datetime.fromtimestamp(expires_at, datetime.timezone.utc)
+                    if expires_at
+                    else None
+                )
 
-            return {
-                "token": token,
-                "token_type": "Bearer",
-                "expires_at": expires_at,
-                "id": str(user[0]),
-                "email": user[2],
-                "name": user[1],
-                "role": "user",
-                "profile_image_url": "",
-            }
+                # Set the cookie token
+                response.set_cookie(
+                    key="token",
+                    value=token,
+                    expires=datetime_expires_at,
+                    httponly=True,  # Ensures the cookie is not accessible via JavaScript
+                    samesite=WEBUI_SESSION_COOKIE_SAME_SITE,
+                    secure=WEBUI_SESSION_COOKIE_SECURE,
+                )
+
+                return {
+                    "token": token,
+                    "token_type": "Bearer",
+                    "expires_at": expires_at,
+                    "id": user.id,
+                    "email": user.email,
+                    "name": user.name,
+                    "role": user.role,
+                    "profile_image_url": user.profile_image_url,
+                }
+            else:
+                raise HTTPException(400, detail=ERROR_MESSAGES.INVALID_CRED)
+            
         else:
-            raise HTTPException(400, detail=f"user {form_data.name} not found")  
-
+            raise HTTPException(400, detail=f"user {form_data.name} not found or expired")  
+    else:
+        raise HTTPException(400, detail=f"sso_mode not enabled")  
 
 ############################
 # SignIn

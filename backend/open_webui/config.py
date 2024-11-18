@@ -567,7 +567,7 @@ Path(CACHE_DIR).mkdir(parents=True, exist_ok=True)
 ENABLE_OLLAMA_API = PersistentConfig(
     "ENABLE_OLLAMA_API",
     "ollama.enable",
-    os.environ.get("ENABLE_OLLAMA_API", "True").lower() == "true",
+    os.environ.get("ENABLE_OLLAMA_API", "False").lower() == "true",
 )
 
 OLLAMA_API_BASE_URL = os.environ.get(
@@ -680,7 +680,7 @@ ENABLE_LOGIN_FORM = PersistentConfig(
 DEFAULT_LOCALE = PersistentConfig(
     "DEFAULT_LOCALE",
     "ui.default_locale",
-    os.environ.get("DEFAULT_LOCALE", ""),
+    os.environ.get("DEFAULT_LOCALE", "zh"),
 )
 
 DEFAULT_MODELS = PersistentConfig(
@@ -724,7 +724,7 @@ DEFAULT_PROMPT_SUGGESTIONS = PersistentConfig(
 DEFAULT_USER_ROLE = PersistentConfig(
     "DEFAULT_USER_ROLE",
     "ui.default_user_role",
-    os.getenv("DEFAULT_USER_ROLE", "pending"),
+    os.getenv("DEFAULT_USER_ROLE", "user"),
 )
 
 USER_PERMISSIONS_CHAT_DELETION = (
@@ -789,22 +789,22 @@ WEBHOOK_URL = PersistentConfig(
     "WEBHOOK_URL", "webhook_url", os.environ.get("WEBHOOK_URL", "")
 )
 
-ENABLE_ADMIN_EXPORT = os.environ.get("ENABLE_ADMIN_EXPORT", "True").lower() == "true"
+ENABLE_ADMIN_EXPORT = os.environ.get("ENABLE_ADMIN_EXPORT", "False").lower() == "true"
 
 ENABLE_ADMIN_CHAT_ACCESS = (
-    os.environ.get("ENABLE_ADMIN_CHAT_ACCESS", "True").lower() == "true"
+    os.environ.get("ENABLE_ADMIN_CHAT_ACCESS", "False").lower() == "true"
 )
 
 ENABLE_COMMUNITY_SHARING = PersistentConfig(
     "ENABLE_COMMUNITY_SHARING",
     "ui.enable_community_sharing",
-    os.environ.get("ENABLE_COMMUNITY_SHARING", "True").lower() == "true",
+    os.environ.get("ENABLE_COMMUNITY_SHARING", "False").lower() == "true",
 )
 
 ENABLE_MESSAGE_RATING = PersistentConfig(
     "ENABLE_MESSAGE_RATING",
     "ui.enable_message_rating",
-    os.environ.get("ENABLE_MESSAGE_RATING", "True").lower() == "true",
+    os.environ.get("ENABLE_MESSAGE_RATING", "False").lower() == "true",
 )
 
 
@@ -865,7 +865,7 @@ WEBUI_BANNERS = PersistentConfig("WEBUI_BANNERS", "ui.banners", banners)
 SHOW_ADMIN_DETAILS = PersistentConfig(
     "SHOW_ADMIN_DETAILS",
     "auth.admin.show",
-    os.environ.get("SHOW_ADMIN_DETAILS", "true").lower() == "true",
+    os.environ.get("SHOW_ADMIN_DETAILS", "false").lower() == "true",
 )
 
 ADMIN_EMAIL = PersistentConfig(
@@ -907,7 +907,7 @@ TAGS_GENERATION_PROMPT_TEMPLATE = PersistentConfig(
 ENABLE_SEARCH_QUERY = PersistentConfig(
     "ENABLE_SEARCH_QUERY",
     "task.search.enable",
-    os.environ.get("ENABLE_SEARCH_QUERY", "True").lower() == "true",
+    os.environ.get("ENABLE_SEARCH_QUERY", "False").lower() == "true",
 )
 
 

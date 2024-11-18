@@ -388,11 +388,11 @@ OFFLINE_MODE = os.environ.get("OFFLINE_MODE", "false").lower() == "true"
 # SSO Mode
 ####################################
 SSO_MODE = os.environ.get("SSO_MODE", "false").lower() == "true"
-SSO_DB_URL = os.environ.get("SSO_DB_URL","mysql+pymysql://root:123456@mysql:3306/cool")
+SSO_DB_URL = os.environ.get("SSO_DB_URL","mysql+pymysql://root:root@10.10.0.16:3306/cool")
 SSO_TABLE = os.environ.get("SSO_TABLE","chatgpt_client")
 SSO_FIELD_NAME = os.environ.get("SSO_FIELD_NAME","user_name")
 SSO_FIELD_EMAIL = os.environ.get("SSO_FIELD_EMAIL","email")
 SSO_FIELD_NICKNAME = os.environ.get("SSO_FIELD_NICKNAME","")
 SSO_FIELD_AVATAR = os.environ.get("SSO_FIELD_AVATAR","")
-SSO_FIELD_ID = os.environ.get("SSO_FIELD_ID","user_id")
+SSO_FIELD_ID = os.environ.get("SSO_FIELD_ID","id")
 

@@ -71,7 +71,7 @@ async def update_user_role(form_data: UserRoleUpdateForm, user=Depends(get_admin
 
 
 @router.get("/user/settings", response_model=Optional[UserSettings])
-async def get_user_settings_by_session_user(user=Depends(get_verified_user)):
+async def get_user_settings_by_session_user(user=Depends(get_verified_user)):   
     user = Users.get_user_by_id(user.id)
     if user:
         return user.settings
