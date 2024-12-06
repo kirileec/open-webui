@@ -111,29 +111,11 @@ Session = scoped_session(SessionLocal)
         
 if SSO_MODE:
     engine2 = create_engine(
-        SSO_DB_URL,pool_pre_ping=True, pool_recycle=3600, poolclass=NullPool
+        SSO_DB_URL,pool_pre_ping=True, pool_recycle=3600, poolclass=NullPool,echo=True
     )
-    SessionLocal2 = sessionmaker(
-        autocommit=False, autoflush=False, bind=engine2, expire_on_commit=False
-    )
+    SessionLocal2 = sessionmaker(bind=engine2,autocommit=False,autoflush=False,expire_on_commit=False)
     Session2 = scoped_session(SessionLocal2)
-    # 定期保持连接活跃的函数
-    def keep_connection_alive():
-        with engine2.connect() as connection:
-            connection.execute("SELECT 1")  # 简单查询保持连接活跃
 
-    def run_scheduler():
-        scheduler = sched.scheduler(time.time, time.sleep)
-        scheduler.enter(180, 1, keep_connection_alive)
-
-        while True:
-            scheduler.run(blocking=False)
-            time.sleep(1)  # 每秒检查一次
-
-    # 启动调度器线程
-    scheduler_thread = threading.Thread(target=run_scheduler, daemon=True)
-    scheduler_thread.start()
-    
 
 def get_session2():
     db2 = SessionLocal2()
