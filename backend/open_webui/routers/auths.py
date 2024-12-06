@@ -41,7 +41,7 @@ from open_webui.env import (
     SSO_FIELD_ID
 )
 if SSO_MODE:
-    from open_webui.apps.webui.internal.db import Session2
+    from open_webui.apps.webui.internal.db import get_db2
     from sqlalchemy import text
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import Response
@@ -321,8 +321,9 @@ async def signin2(request: Request, response: Response, form_data: Signin2Form):
     if SSO_MODE:
         sql = f"SELECT {SSO_FIELD_ID},{SSO_FIELD_NAME},{SSO_FIELD_EMAIL} FROM {SSO_TABLE} WHERE user_type=2 and `status`=1 and expire_time > NOW() and {SSO_FIELD_EMAIL}='{form_data.email}'"
         try:
-            result = Session2.execute(text(sql))
-            userSrc = result.fetchone()
+            with get_db2() as db:
+                result = db.execute(text(sql))
+                userSrc = result.fetchone()
         except Exception as e:
             raise HTTPException(500, detail=ERROR_MESSAGES.DEFAULT(e))
         # end try
