@@ -357,6 +357,71 @@ async def signin2(request: Request, response: Response, form_data: Signin2Form):
                     datetime.datetime.fromtimestamp(expires_at, datetime.timezone.utc)
                     if expires_at
                     else None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 )
 
                 # Set the cookie token
@@ -386,6 +451,7 @@ async def signin2(request: Request, response: Response, form_data: Signin2Form):
             raise HTTPException(400, detail=f"user {form_data.name} not found or expired")  
     else:
         raise HTTPException(400, detail=f"sso_mode not enabled")  
+
 
 ############################
 # SignIn
