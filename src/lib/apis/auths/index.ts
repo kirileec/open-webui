@@ -174,37 +174,7 @@ export const ldapUserSignIn = async (user: string, password: string) => {
 	return res;
 };
 
-export const userSignIn2 = async (email: string, name: string) => {
-	let error = null;
 
-	const res = await fetch(`${WEBUI_API_BASE_URL}/auths/signin2`, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		credentials: 'include',
-		body: JSON.stringify({
-			email: email,
-			name: name
-		})
-	})
-		.then(async (res) => {
-			if (!res.ok) throw await res.json();
-			return res.json();
-		})
-		.catch((err) => {
-			console.log(err);
-
-			error = err.detail;
-			return null;
-		});
-
-	if (error) {
-		throw error;
-	}
-
-	return res;
-};
 
 export const getLdapConfig = async (token: string = '') => {
 	let error = null;
