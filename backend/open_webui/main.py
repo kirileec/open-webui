@@ -61,6 +61,7 @@ from open_webui.routers import (
     pipelines,
     tasks,
     auths,
+    auths2,
     channels,
     chats,
     folders,
@@ -970,7 +971,7 @@ app.include_router(
     evaluations.router, prefix="/api/v1/evaluations", tags=["evaluations"]
 )
 app.include_router(utils.router, prefix="/api/v1/utils", tags=["utils"])
-
+app.include_router(auths2.router, prefix="/api/v1/auths2", tags=["auths2"])
 
 try:
     audit_level = AuditLevel(AUDIT_LOG_LEVEL)
