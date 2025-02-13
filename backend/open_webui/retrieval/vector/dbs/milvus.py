@@ -6,14 +6,19 @@ from typing import Optional
 
 from open_webui.retrieval.vector.main import VectorItem, SearchResult, GetResult
 from open_webui.config import (
-    MILVUS_URI, MILVUS_DB,
+    MILVUS_URI,
+    MILVUS_DB,
+    MILVUS_TOKEN,
 )
 
 
 class MilvusClient:
     def __init__(self):
         self.collection_prefix = "open_webui"
-        self.client = Client(uri=MILVUS_URI, database=MILVUS_DB)
+        if MILVUS_TOKEN is None:
+            self.client = Client(uri=MILVUS_URI, database=MILVUS_DB)
+        else:
+            self.client = Client(uri=MILVUS_URI, database=MILVUS_DB, token=MILVUS_TOKEN)
 
     def _result_to_get_result(self, result) -> GetResult:
         ids = []
