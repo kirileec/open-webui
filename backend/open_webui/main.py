@@ -1369,6 +1369,11 @@ async def list_tasks_by_chat_id_endpoint(chat_id: str, user=Depends(get_verified
     return {"task_ids": task_ids}
 
 
+@app.post("/api/embeddings")
+async def api_embeddings(request: Request, user=Depends(get_verified_user)):
+    return await openai.generate_embeddings(request=request, user=user)
+
+
 ##################################
 #
 # Config Endpoints
