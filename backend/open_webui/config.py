@@ -2,6 +2,8 @@ import json
 import logging
 import os
 import shutil
+import base64
+
 from datetime import datetime
 from pathlib import Path
 from typing import Generic, Optional, TypeVar
@@ -586,6 +588,20 @@ load_oauth_providers()
 
 STATIC_DIR = Path(os.getenv("STATIC_DIR", OPEN_WEBUI_DIR / "static")).resolve()
 
+
+def override_static(path: str, content: str):
+    # Ensure path is safe
+    if "/" in path or ".." in path:
+        log.error(f"Invalid path: {path}")
+        return
+
+    file_path = os.path.join(STATIC_DIR, path)
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+    with open(file_path, "wb") as f:
+        f.write(base64.b64decode(content))  # Convert Base64 back to raw binary
+
+
 frontend_favicon = FRONTEND_BUILD_DIR / "static" / "favicon.png"
 
 if frontend_favicon.exists():
@@ -593,8 +609,6 @@ if frontend_favicon.exists():
         shutil.copyfile(frontend_favicon, STATIC_DIR / "favicon.png")
     except Exception as e:
         logging.error(f"An error occurred: {e}")
-else:
-    logging.warning(f"Frontend favicon not found at {frontend_favicon}")
 
 frontend_splash = FRONTEND_BUILD_DIR / "static" / "splash.png"
 
@@ -603,12 +617,18 @@ if frontend_splash.exists():
         shutil.copyfile(frontend_splash, STATIC_DIR / "splash.png")
     except Exception as e:
         logging.error(f"An error occurred: {e}")
-else:
-    logging.warning(f"Frontend splash not found at {frontend_splash}")
+
+frontend_loader = FRONTEND_BUILD_DIR / "static" / "loader.js"
+
+if frontend_loader.exists():
+    try:
+        shutil.copyfile(frontend_loader, STATIC_DIR / "loader.js")
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
 
 
 ####################################
-# CUSTOM_NAME
+# CUSTOM_NAME (Legacy)
 ####################################
 
 CUSTOM_NAME = os.environ.get("CUSTOM_NAME", "")
@@ -649,6 +669,16 @@ if CUSTOM_NAME:
         log.exception(e)
         pass
 
+
+####################################
+# LICENSE_KEY
+####################################
+
+LICENSE_KEY = PersistentConfig(
+    "LICENSE_KEY",
+    "license.key",
+    os.environ.get("LICENSE_KEY", ""),
+)
 
 ####################################
 # STORAGE PROVIDER
@@ -1188,6 +1218,12 @@ ENABLE_TAGS_GENERATION = PersistentConfig(
     "ENABLE_TAGS_GENERATION",
     "task.tags.enable",
     os.environ.get("ENABLE_TAGS_GENERATION", "True").lower() == "true",
+)
+
+ENABLE_TITLE_GENERATION = PersistentConfig(
+    "ENABLE_TITLE_GENERATION",
+    "task.title.enable",
+    os.environ.get("ENABLE_TITLE_GENERATION", "True").lower() == "true",
 )
 
 
@@ -1803,6 +1839,18 @@ SEARCHAPI_ENGINE = PersistentConfig(
     os.getenv("SEARCHAPI_ENGINE", ""),
 )
 
+SERPAPI_API_KEY = PersistentConfig(
+    "SERPAPI_API_KEY",
+    "rag.web.search.serpapi_api_key",
+    os.getenv("SERPAPI_API_KEY", ""),
+)
+
+SERPAPI_ENGINE = PersistentConfig(
+    "SERPAPI_ENGINE",
+    "rag.web.search.serpapi_engine",
+    os.getenv("SERPAPI_ENGINE", ""),
+)
+
 BING_SEARCH_V7_ENDPOINT = PersistentConfig(
     "BING_SEARCH_V7_ENDPOINT",
     "rag.web.search.bing_search_v7_endpoint",
@@ -1835,6 +1883,11 @@ RAG_WEB_SEARCH_CONCURRENT_REQUESTS = PersistentConfig(
     int(os.getenv("RAG_WEB_SEARCH_CONCURRENT_REQUESTS", "10")),
 )
 
+RAG_WEB_SEARCH_TRUST_ENV = PersistentConfig(
+    "RAG_WEB_SEARCH_TRUST_ENV",
+    "rag.web.search.trust_env",
+    os.getenv("RAG_WEB_SEARCH_TRUST_ENV", False),
+)
 
 ####################################
 # Images

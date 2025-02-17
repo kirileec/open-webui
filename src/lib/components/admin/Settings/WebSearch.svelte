@@ -23,6 +23,7 @@
 		'serper',
 		'serply',
 		'searchapi',
+		'serpapi',
 		'duckduckgo',
 		'tavily',
 		'jina',
@@ -102,7 +103,7 @@
 					<div class=" self-center text-xs font-medium">{$i18n.t('Web Search Engine')}</div>
 					<div class="flex items-center relative">
 						<select
-							class="dark:bg-gray-900 w-fit pr-8 rounded px-2 p-1 text-xs bg-transparent outline-none text-right"
+							class="dark:bg-gray-900 w-fit pr-8 rounded-sm px-2 p-1 text-xs bg-transparent outline-hidden text-right"
 							bind:value={webConfig.search.engine}
 							placeholder={$i18n.t('Select a engine')}
 							required
@@ -126,7 +127,7 @@
 								<div class="flex w-full">
 									<div class="flex-1">
 										<input
-											class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-none"
+											class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
 											type="text"
 											placeholder={$i18n.t('Enter Searxng Query URL')}
 											bind:value={webConfig.search.searxng_query_url}
@@ -154,7 +155,7 @@
 								<div class="flex w-full">
 									<div class="flex-1">
 										<input
-											class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-none"
+											class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
 											type="text"
 											placeholder={$i18n.t('Enter Google PSE Engine Id')}
 											bind:value={webConfig.search.google_pse_engine_id}
@@ -259,10 +260,38 @@
 								<div class="flex w-full">
 									<div class="flex-1">
 										<input
-											class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-none"
+											class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
 											type="text"
 											placeholder={$i18n.t('Enter SearchApi Engine')}
 											bind:value={webConfig.search.searchapi_engine}
+											autocomplete="off"
+										/>
+									</div>
+								</div>
+							</div>
+						{:else if webConfig.search.engine === 'serpapi'}
+							<div>
+								<div class=" self-center text-xs font-medium mb-1">
+									{$i18n.t('SerpApi API Key')}
+								</div>
+
+								<SensitiveInput
+									placeholder={$i18n.t('Enter SerpApi API Key')}
+									bind:value={webConfig.search.serpapi_api_key}
+								/>
+							</div>
+							<div class="mt-1.5">
+								<div class=" self-center text-xs font-medium mb-1">
+									{$i18n.t('SerpApi Engine')}
+								</div>
+
+								<div class="flex w-full">
+									<div class="flex-1">
+										<input
+											class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
+											type="text"
+											placeholder={$i18n.t('Enter SerpApi Engine')}
+											bind:value={webConfig.search.serpapi_engine}
 											autocomplete="off"
 										/>
 									</div>
@@ -310,7 +339,7 @@
 								<div class="flex w-full">
 									<div class="flex-1">
 										<input
-											class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-none"
+											class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
 											type="text"
 											placeholder={$i18n.t('Enter Bing Search V7 Endpoint')}
 											bind:value={webConfig.search.bing_search_v7_endpoint}
@@ -342,7 +371,7 @@
 							</div>
 
 							<input
-								class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-none"
+								class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
 								placeholder={$i18n.t('Search Result Count')}
 								bind:value={webConfig.search.result_count}
 								required
@@ -355,7 +384,7 @@
 							</div>
 
 							<input
-								class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-none"
+								class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
 								placeholder={$i18n.t('Concurrent Requests')}
 								bind:value={webConfig.search.concurrent_requests}
 								required
@@ -369,7 +398,7 @@
 						</div>
 
 						<input
-							class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-none"
+							class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
 							placeholder={$i18n.t(
 								'Enter domains separated by commas (e.g., example.com,site.org)'
 							)}
@@ -379,7 +408,7 @@
 				{/if}
 			</div>
 
-			<hr class=" dark:border-gray-850 my-2" />
+			<hr class="border-gray-100 dark:border-gray-850 my-2" />
 
 			<div>
 				<div class=" mb-1 text-sm font-medium">
@@ -393,7 +422,7 @@
 						</div>
 
 						<button
-							class="p-1 px-3 text-xs flex rounded transition"
+							class="p-1 px-3 text-xs flex rounded-sm transition"
 							on:click={() => {
 								webConfig.web_loader_ssl_verification = !webConfig.web_loader_ssl_verification;
 								submitHandler();
@@ -418,7 +447,7 @@
 						<div class=" w-20 text-xs font-medium self-center">{$i18n.t('Language')}</div>
 						<div class=" flex-1 self-center">
 							<input
-								class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-none"
+								class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
 								type="text"
 								placeholder={$i18n.t('Enter language codes')}
 								bind:value={youtubeLanguage}
@@ -433,7 +462,7 @@
 						<div class=" w-20 text-xs font-medium self-center">{$i18n.t('Proxy URL')}</div>
 						<div class=" flex-1 self-center">
 							<input
-								class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-none"
+								class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-hidden"
 								type="text"
 								placeholder={$i18n.t('Enter proxy URL (e.g. https://user:password@host:port)')}
 								bind:value={youtubeProxyUrl}

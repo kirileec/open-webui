@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.12] - 2025-02-13
+
+### Added
+
+- **🛠️ Multiple Tool Calls Support for Native Function Mode**: Functions now can call multiple tools within a single response, unlocking better automation and workflow flexibility when using native function calling.
+
+### Fixed
+
+- **📝 Playground Text Completion Restored**: Addressed an issue where text completion in the Playground was not functioning.
+- **🔗 Direct Connections Now Work for Regular Users**: Fixed a bug where users with the 'user' role couldn't establish direct API connections, enabling seamless model usage for all user tiers.
+- **⚡ Landing Page Input No Longer Lags with Long Text**: Improved input responsiveness on the landing page, ensuring fast and smooth typing experiences even when entering long messages.
+- **🔧 Parameter in Functions Fixed**: Fixed an issue where the reserved parameters wasn’t recognized within functions, restoring full functionality for advanced task-based automation.
+
 ## [0.5.11] - 2025-02-13
 
 ### Added
@@ -28,10 +41,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **🔧 Web Search Configuration Bug**: Fixed issues where web search filters and settings weren't correctly applied.
 - **💾 User Settings Persistence Fix**: Ensured user-specific settings are correctly saved and applied across sessions.
 - **🔄 OpenID Username Retrieval Enhancement**: Usernames are now correctly picked up and assigned for OpenID Connect (OIDC) logins.
-
-### Changed
-
-- **🔗 Improved Direct Connections Integration**: Simplified the configuration process for setting up direct API connections, making it easier to integrate custom inference endpoints.
 
 ## [0.5.10] - 2025-02-05
 
