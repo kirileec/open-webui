@@ -362,14 +362,25 @@ async def chat_web_search_handler(
             )
 
             files = form_data.get("files", [])
-            files.append(
-                {
-                    "collection_name": results["collection_name"],
-                    "name": searchQuery,
-                    "type": "web_search_results",
-                    "urls": results["filenames"],
-                }
-            )
+
+            if request.app.state.config.RAG_WEB_SEARCH_FULL_CONTEXT:
+                files.append(
+                    {
+                        "docs": results.get("docs", []),
+                        "name": searchQuery,
+                        "type": "web_search_docs",
+                        "urls": results["filenames"],
+                    }
+                )
+            else:
+                files.append(
+                    {
+                        "collection_name": results["collection_name"],
+                        "name": searchQuery,
+                        "type": "web_search_results",
+                        "urls": results["filenames"],
+                    }
+                )
             form_data["files"] = files
         else:
             await event_emitter(
@@ -800,7 +811,7 @@ async def process_chat_payload(request, form_data, metadata, user, model):
 
         # Workaround for Ollama 2.0+ system prompt issue
         # TODO: replace with add_or_update_system_message
-        if model["owned_by"] == "ollama":
+        if model.get("owned_by") == "ollama":
             form_data["messages"] = prepend_to_first_user_message_content(
                 rag_template(
                     request.app.state.config.RAG_TEMPLATE, context_string, prompt
@@ -1347,7 +1358,14 @@ async def process_chat_response(
             )
 
             tool_calls = []
-            content = message.get("content", "") if message else ""
+
+            last_assistant_message = get_last_assistant_message(form_data["messages"])
+            content = (
+                message.get("content", "")
+                if message
+                else last_assistant_message if last_assistant_message else ""
+            )
+
             content_blocks = [
                 {
                     "type": "text",
