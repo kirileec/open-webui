@@ -715,9 +715,14 @@ async def process_chat_payload(request, form_data, user, metadata, model):
         raise e
 
     try:
+        filter_functions = [
+            Functions.get_function_by_id(filter_id)
+            for filter_id in get_sorted_filter_ids(model)
+        ]
+
         form_data, flags = await process_filter_functions(
             request=request,
-            filter_ids=get_sorted_filter_ids(model),
+            filter_functions=filter_functions,
             filter_type="inlet",
             form_data=form_data,
             extra_params=extra_params,
@@ -1071,9 +1076,12 @@ async def process_chat_response(
         "__request__": request,
         "__model__": model,
     }
-    filter_ids = get_sorted_filter_ids(model)
+    filter_functions = [
+        Functions.get_function_by_id(filter_id)
+        for filter_id in get_sorted_filter_ids(model)
+    ]
 
-    print(f"{filter_ids=}")
+    print(f"{filter_functions=}")
 
     # Streaming response
     if event_emitter and event_caller:
@@ -1480,7 +1488,7 @@ async def process_chat_response(
 
                             data, _ = await process_filter_functions(
                                 request=request,
-                                filter_ids=filter_ids,
+                                filter_functions=filter_functions,
                                 filter_type="stream",
                                 form_data=data,
                                 extra_params=extra_params,
@@ -1554,9 +1562,59 @@ async def process_chat_response(
 
                                     value = delta.get("content")
 
-                                    if value:
-                                        content = f"{content}{value}"
+                                    reasoning_content = delta.get("reasoning_content")
+                                    if reasoning_content:
+                                        if (
+                                            not content_blocks
+                                            or content_blocks[-1]["type"] != "reasoning"
+                                        ):
+                                            reasoning_block = {
+                                                "type": "reasoning",
+                                                "start_tag": "think",
+                                                "end_tag": "/think",
+                                                "attributes": {
+                                                    "type": "reasoning_content"
+                                                },
+                                                "content": "",
+                                                "started_at": time.time(),
+                                            }
+                                            content_blocks.append(reasoning_block)
+                                        else:
+                                            reasoning_block = content_blocks[-1]
 
+                                        reasoning_block["content"] += reasoning_content
+
+                                        data = {
+                                            "content": serialize_content_blocks(
+                                                content_blocks
+                                            )
+                                        }
+
+                                    if value:
+                                        if (
+                                            content_blocks
+                                            and content_blocks[-1]["type"]
+                                            == "reasoning"
+                                            and content_blocks[-1]
+                                            .get("attributes", {})
+                                            .get("type")
+                                            == "reasoning_content"
+                                        ):
+                                            reasoning_block = content_blocks[-1]
+                                            reasoning_block["ended_at"] = time.time()
+                                            reasoning_block["duration"] = int(
+                                                reasoning_block["ended_at"]
+                                                - reasoning_block["started_at"]
+                                            )
+
+                                            content_blocks.append(
+                                                {
+                                                    "type": "text",
+                                                    "content": "",
+                                                }
+                                            )
+
+                                        content = f"{content}{value}"
                                         if not content_blocks:
                                             content_blocks.append(
                                                 {
@@ -2027,7 +2085,7 @@ async def process_chat_response(
             for event in events:
                 event, _ = await process_filter_functions(
                     request=request,
-                    filter_ids=filter_ids,
+                    filter_functions=filter_functions,
                     filter_type="stream",
                     form_data=event,
                     extra_params=extra_params,
@@ -2039,7 +2097,7 @@ async def process_chat_response(
             async for data in original_generator:
                 data, _ = await process_filter_functions(
                     request=request,
-                    filter_ids=filter_ids,
+                    filter_functions=filter_functions,
                     filter_type="stream",
                     form_data=data,
                     extra_params=extra_params,
