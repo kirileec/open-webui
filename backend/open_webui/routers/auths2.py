@@ -87,7 +87,7 @@ async def signin2(request: Request, response: Response, form_data: Signin2Form):
                 raise HTTPException(400, detail=ERROR_MESSAGES.INVALID_CRED)
         else:
             raise HTTPException(
-                400, detail=f"user {form_data.name} not found or expired"
+                400, detail=f"用户 {form_data.name} 不存在或已过期或为免费账号"
             )
     else:
         raise HTTPException(400, detail=f"SSO_SQL is empty")
