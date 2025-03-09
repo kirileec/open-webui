@@ -39,7 +39,7 @@ async def signin2(request: Request, response: Response, form_data: Signin2Form):
             raise HTTPException(500, detail=ERROR_MESSAGES.DEFAULT(e))
         if userSrc:
             # 用户存在, 表示验证通过, 此时将用户注册到系统中
-            if not Users.get_user_by_email(form_data.email):
+            if not Users.get_user_by_email(form_data.email.lower()):
                 await signup(
                     request,
                     response,
@@ -49,7 +49,7 @@ async def signin2(request: Request, response: Response, form_data: Signin2Form):
                         name=form_data.name,
                     ),
                 )
-            user = Auths.authenticate_user_by_trusted_header(form_data.email)
+            user = Auths.authenticate_user_by_trusted_header(form_data.email.lower())
             if user:
                 expires_delta = parse_duration(request.app.state.config.JWT_EXPIRES_IN)
                 expires_at = None
