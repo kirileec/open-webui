@@ -883,6 +883,8 @@
 	"Permission denied when accessing microphone: {{error}}": "Tilladelse nægtet ved adgang til mikrofon: {{error}}",
 	"Permissions": "",
 	"Perplexity API Key": "",
+	"Perplexity Model": "",
+	"Perplexity Search Context Usage": "",
 	"Personalization": "Personalisering",
 	"Pin": "Fastgør",
 	"Pinned": "Fastgjort",
