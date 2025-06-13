@@ -644,7 +644,7 @@ class ChatTable:
                     ).params(title_key=f"%{search_text}%", content_key=search_text)
                 )
 
-                # Tag filtering
+                # Check if there are any tags to filter, it should have all the tags
                 if "none" in tag_ids:
                     query = query.filter(
                         text(
@@ -661,7 +661,13 @@ class ChatTable:
                         and_(
                             *[
                                 text(
-                                    f"EXISTS (SELECT 1 FROM json_each(Chat.meta, '$.tags') AS tag WHERE tag.value = :tag_id_{tag_idx})"
+                                    f"""
+                                    EXISTS (
+                                        SELECT 1
+                                        FROM json_each(Chat.meta, '$.tags') AS tag
+                                        WHERE tag.value = :tag_id_{tag_idx}
+                                    )
+                                    """
                                 ).params(**{f"tag_id_{tag_idx}": tag_id})
                                 for tag_idx, tag_id in enumerate(tag_ids)
                             ]
@@ -685,7 +691,7 @@ class ChatTable:
                     ).params(title_key=f"%{search_text}%", content_key=search_text)
                 )
 
-                # Tag filtering
+                # Check if there are any tags to filter, it should have all the tags
                 if "none" in tag_ids:
                     query = query.filter(
                         text(
@@ -702,7 +708,13 @@ class ChatTable:
                         and_(
                             *[
                                 text(
-                                    f"EXISTS (SELECT 1 FROM json_array_elements_text(Chat.meta->'tags') AS tag WHERE tag = :tag_id_{tag_idx})"
+                                    f"""
+                                    EXISTS (
+                                        SELECT 1
+                                        FROM json_array_elements_text(Chat.meta->'tags') AS tag
+                                        WHERE tag = :tag_id_{tag_idx}
+                                    )
+                                    """
                                 ).params(**{f"tag_id_{tag_idx}": tag_id})
                                 for tag_idx, tag_id in enumerate(tag_ids)
                             ]
