@@ -7,6 +7,8 @@
 	import { onMount, getContext } from 'svelte';
 	import { models } from '$lib/stores';
 
+	import ModelModal from './LeaderboardModal.svelte';
+
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import MagnifyingGlass from '$lib/components/icons/MagnifyingGlass.svelte';
@@ -55,6 +57,25 @@
 		rating: number;
 		won: number;
 		lost: number;
+	};
+
+	//////////////////////
+	//
+	// Aggregate Level Modal
+	//
+	//////////////////////
+
+	let showLeaderboardModal = false;
+	let selectedModel = null;
+
+	const openFeedbackModal = (model) => {
+		showLeaderboardModal = true;
+		selectedModel = model;
+	};
+
+	const closeLeaderboardModal = () => {
+		showLeaderboardModal = false;
+		selectedModel = null;
 	};
 
 	function setSortKey(key) {
@@ -304,6 +325,13 @@
 		return 0;
 	});
 </script>
+
+<ModelModal
+	bind:show={showLeaderboardModal}
+	model={selectedModel}
+	{feedbacks}
+	onClose={closeLeaderboardModal}
+/>
 
 <div class="mt-0.5 mb-2 gap-1 flex flex-col md:flex-row justify-between">
 	<div class="flex md:self-center text-lg font-medium px-0.5 shrink-0 items-center">
