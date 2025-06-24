@@ -49,7 +49,6 @@
 	import Spinner from '$lib/components/common/Spinner.svelte';
 
 	const i18n = getContext('i18n');
-
 	let loaded = false;
 	let DB = null;
 	let localDBChats = [];
@@ -58,7 +57,7 @@
 
 	onMount(async () => {
 		if ($user === undefined || $user === null) {
-			await goto('/auth');
+			await goto('/auth2');
 		} else if (['user', 'admin'].includes($user?.role)) {
 			try {
 				// Check if IndexedDB exists

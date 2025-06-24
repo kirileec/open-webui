@@ -11,20 +11,18 @@
     let name = '';
     let from = '';
     let loading = true;  // 控制加载动画的显示状态
-
     const setSessionUser = async (sessionUser) => {
-		if (sessionUser) {
-			console.log(sessionUser);
-			toast.success($i18n.t(`You're now logged in.`));
-			if (sessionUser.token) {
-				localStorage.token = sessionUser.token;
-			}
+        if (sessionUser) {
+          toast.success($i18n.t(`You're now logged in.`));
+          if (sessionUser.token) {
+            localStorage.token = sessionUser.token;
+          }
 
-			$socket.emit('user-join', { auth: { token: sessionUser.token } });
-			await user.set(sessionUser);
-			await config.set(await getBackendConfig());
-			goto('/');
-		}
+          $socket?.emit('user-join', { auth: { token: sessionUser.token } });
+          await user.set(sessionUser);
+          await config.set(await getBackendConfig());
+          goto('/');
+        }
 	};
     // onMount 确保在组件挂载后获取 URL 的查询参数
     onMount(async () => {
