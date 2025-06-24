@@ -457,7 +457,7 @@
 			user.set(null);
 			localStorage.removeItem('token');
 
-			location.href = res?.redirect_url ?? '/auth';
+			location.href = res?.redirect_url ?? '/auth2';
 		}
 	};
 
@@ -599,9 +599,9 @@
 					if ($page.url.pathname !== '/auth2') {
 						await goto('/auth2');
 					}
-					if ($page.url.pathname !== '/auth') {
-						await goto(`/auth?redirect=${encodedUrl}`);
-					}
+					// if ($page.url.pathname !== '/auth') {
+					// 	await goto(`/auth?redirect=${encodedUrl}`);
+					// }
 				}
 			}
 		} else {
