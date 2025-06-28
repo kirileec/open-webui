@@ -196,7 +196,13 @@
 				) {
 					event.preventDefault();
 					console.log('temporaryChat');
-					temporaryChatEnabled.set(!$temporaryChatEnabled);
+
+					if ($user?.permissions?.chat?.temporary_enforced) {
+						temporaryChatEnabled.set(true);
+					} else {
+						temporaryChatEnabled.set(!$temporaryChatEnabled);
+					}
+
 					await goto('/');
 					const newChatButton = document.getElementById('new-chat-button');
 					setTimeout(() => {
