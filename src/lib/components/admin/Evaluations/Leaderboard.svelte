@@ -60,6 +60,34 @@
 		lost: number;
 	};
 
+	function setSortKey(key) {
+		if (orderBy === key) {
+			direction = direction === 'asc' ? 'desc' : 'asc';
+		} else {
+			orderBy = key;
+			direction = key === 'name' ? 'asc' : 'desc';
+		}
+	}
+
+	//////////////////////
+	//
+	// Aggregate Level Modal
+	//
+	//////////////////////
+
+	let showLeaderboardModal = false;
+	let selectedModel = null;
+
+	const openLeaderboardModelModal = (model) => {
+		showLeaderboardModal = true;
+		selectedModel = model;
+	};
+
+	const closeLeaderboardModal = () => {
+		showLeaderboardModal = false;
+		selectedModel = null;
+	};
+
 	//////////////////////
 	//
 	// Aggregate Level Modal
@@ -504,7 +532,10 @@
 			</thead>
 			<tbody class="">
 				{#each sortedModels as model, modelIdx (model.id)}
-					<tr class="bg-white dark:bg-gray-900 dark:border-gray-850 text-xs group">
+					<tr
+						class="bg-white dark:bg-gray-900 dark:border-gray-850 text-xs group cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-850/50 transition"
+						on:click={() => openLeaderboardModelModal(model)}
+					>
 						<td class="px-3 py-1.5 text-left font-medium text-gray-900 dark:text-white w-fit">
 							<div class=" line-clamp-1">
 								{model?.rating !== '-' ? modelIdx + 1 : '-'}
