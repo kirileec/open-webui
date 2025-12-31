@@ -94,27 +94,12 @@
 	//
 	//////////////////////
 
-	let showLeaderboardModal = false;
-	let selectedModel = null;
 
 	const openFeedbackModal = (model) => {
 		showLeaderboardModal = true;
 		selectedModel = model;
 	};
 
-	const closeLeaderboardModal = () => {
-		showLeaderboardModal = false;
-		selectedModel = null;
-	};
-
-	function setSortKey(key) {
-		if (orderBy === key) {
-			direction = direction === 'asc' ? 'desc' : 'asc';
-		} else {
-			orderBy = key;
-			direction = key === 'name' ? 'asc' : 'desc';
-		}
-	}
 
 	//////////////////////
 	//
