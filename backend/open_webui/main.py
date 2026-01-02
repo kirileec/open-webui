@@ -78,6 +78,9 @@ from open_webui.routers import (
     utils,
 )
 
+## linx
+from open_webui.routers import auths2
+
 from open_webui.routers.retrieval import (
     get_embedding_function,
     get_ef,
@@ -971,6 +974,8 @@ app.include_router(
 )
 app.include_router(utils.router, prefix="/api/v1/utils", tags=["utils"])
 
+## linx
+app.include_router(auths2.router, prefix="/api/v1/auths2", tags=["auths2"])
 
 try:
     audit_level = AuditLevel(AUDIT_LOG_LEVEL)

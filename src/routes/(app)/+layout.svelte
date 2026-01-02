@@ -57,7 +57,8 @@
 
 	onMount(async () => {
 		if ($user === undefined || $user === null) {
-			await goto('/auth');
+			// linx
+			await goto('/auth2');
 		} else if (['user', 'admin'].includes($user?.role)) {
 			try {
 				// Check if IndexedDB exists

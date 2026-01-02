@@ -16,7 +16,8 @@ const login = (email: string, password: string) => {
 			// regardless on local language preferences
 			localStorage.setItem('locale', 'en-US');
 			// Visit auth page
-			cy.visit('/auth');
+			// linx
+			cy.visit('/auth2');
 			// Fill out the form
 			cy.get('input[autocomplete="email"]').type(email);
 			cy.get('input[type="password"]').type(password);

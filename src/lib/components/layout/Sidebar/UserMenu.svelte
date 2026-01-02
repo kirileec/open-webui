@@ -160,7 +160,7 @@
 					user.set(null);
 
 					localStorage.removeItem('token');
-					location.href = '/auth';
+					location.href = '/auth2';
 
 					show = false;
 				}}
