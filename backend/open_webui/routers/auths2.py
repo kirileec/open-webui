@@ -51,7 +51,7 @@ async def signin2(request: Request, response: Response, form_data: Signin2Form):
                             name=form_data.name,
                         ),
                     )
-                user = Auths.authenticate_user_by_email(form_data.email.lower())
+                user = Auths.authenticate_user_by_trusted_header(form_data.email.lower())
                 if user:
                     expires_delta = parse_duration(request.app.state.config.JWT_EXPIRES_IN)
                     expires_at = None
